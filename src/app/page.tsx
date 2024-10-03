@@ -1,101 +1,120 @@
-import Image from "next/image";
 
-export default function Home() {
+"use client";
+"use client";
+// components/TonContractUI.tsx
+
+import React, { useState, useEffect } from 'react';
+import { useTonAddress, TonConnectButton } from '@tonconnect/ui-react';
+
+const TonContractUI: React.FC = () => {
+  const [counterValue, setCounterValue] = useState<number>(0);
+  const [recentSender, setRecentSender] = useState<string>('');
+  const [withdrawAmount, setWithdrawAmount] = useState<string>('');
+  const [depositAmount, setDepositAmount] = useState<string>('');
+  const [balance, setBalance] = useState<number>(0);
+
+  const userFriendlyAddress = useTonAddress();
+
+  // Fetch data when the user is connected
+  useEffect(() => {
+    if (userFriendlyAddress) {
+      // Fetch data from the smart contract here
+      // For demonstration, we'll set some dummy data
+      setCounterValue(42);
+      setRecentSender('0:abcdef...');
+      setBalance(1000);
+    }
+  }, [userFriendlyAddress]);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center">
+      {!userFriendlyAddress ? (
+        // Show the welcome message and TonConnectButton
+        <div className="flex flex-col items-center justify-center flex-grow">
+          <h1 className="text-2xl font-semibold mb-4 text-center text-gray-800">
+            Welcome to our DApp
+          </h1>
+          <p className="text-gray-700 mb-6">Please connect your wallet to continue.</p>
+          <TonConnectButton />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      ) : (
+        <>
+          {/* Header */}
+          <header className="w-full bg-white shadow-sm p-3">
+            <div className="max-w-3xl mx-auto flex flex-wrap items-center justify-between text-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+                <div className="text-gray-700">
+                  <span className="font-medium">Counter Value:</span> {counterValue}
+                </div>
+                <div className="text-gray-700">
+                  <span className="font-medium">Balance:</span> {balance} TON
+                </div>
+              </div>
+              <div className="mt-1 sm:mt-0 text-gray-700">
+                <span className="font-medium">Connected Address:</span> {userFriendlyAddress}
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <main className="flex-grow w-full flex flex-col items-center px-4 py-6">
+            <h1 className="text-2xl font-semibold mb-4 text-center text-gray-800">
+              TON Smart Contract Interface
+            </h1>
+
+            {/* Actions Card */}
+            <div className="bg-white shadow-sm rounded-md p-6 w-full max-w-md animate-fade-in">
+              {/* Deposit Section */}
+              <div className="flex flex-col mb-6">
+                <label className="text-gray-600 mb-1 text-sm">Deposit Amount</label>
+                <div className="flex">
+                  <input
+                    type="number"
+                    value={depositAmount}
+                    onChange={(e) => setDepositAmount(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-400 text-sm"
+                    placeholder="Enter amount"
+                  />
+                  <button className="px-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-r-md hover:opacity-90 transition duration-200 text-sm">
+                    Deposit
+                  </button>
+                </div>
+              </div>
+
+              {/* Withdraw Section */}
+              <div className="flex flex-col mb-6">
+                <label className="text-gray-600 mb-1 text-sm">Withdraw Amount</label>
+                <div className="flex">
+                  <input
+                    type="number"
+                    value={withdrawAmount}
+                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-400 text-sm"
+                    placeholder="Enter amount"
+                  />
+                  <button className="px-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-r-md hover:opacity-90 transition duration-200 text-sm">
+                    Withdraw
+                  </button>
+                </div>
+              </div>
+
+              {/* Increment Counter */}
+              <div className="flex justify-center">
+                <button className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-md hover:opacity-90 transition duration-200 transform hover:scale-105 text-sm">
+                  Increment Counter
+                </button>
+              </div>
+            </div>
+          </main>
+
+          {/* Footer (Optional) */}
+          <footer className="w-full bg-white p-3 text-center text-gray-500 text-xs">
+            &copy; {new Date().getFullYear()} TON DApp Interface
+          </footer>
+        </>
+      )}
     </div>
   );
-}
+};
+
+export default TonContractUI;
