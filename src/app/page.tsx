@@ -1,30 +1,22 @@
 
 "use client";
-"use client";
-// components/TonContractUI.tsx
 
-import React, { useState, useEffect } from 'react';
+// components/TonContractUI.tsx
+//EQABibbrtqLJ-hg0IeDOnU3nFBWCpaDdzOmoh3fuWqxw831A
+import React, { useState } from 'react';
 import { useTonAddress, TonConnectButton } from '@tonconnect/ui-react';
+import { useMainContract } from './hooks/useMainContract';
+import { fromNano } from 'ton-core';
 
 const TonContractUI: React.FC = () => {
-  const [counterValue, setCounterValue] = useState<number>(0);
-  const [recentSender, setRecentSender] = useState<string>('');
-  const [withdrawAmount, setWithdrawAmount] = useState<string>('');
-  const [depositAmount, setDepositAmount] = useState<string>('');
-  const [balance, setBalance] = useState<number>(0);
+  const [withdrawAmount, setWithdrawAmount] = useState<number>(0);
+  const [depositAmount, setDepositAmount] = useState<number>(0);
+  
+  const { counter_value,contract_balance,sendIncrement,sendDeposit ,sendWithdraw} = useMainContract();
 
   const userFriendlyAddress = useTonAddress();
 
-  // Fetch data when the user is connected
-  useEffect(() => {
-    if (userFriendlyAddress) {
-      // Fetch data from the smart contract here
-      // For demonstration, we'll set some dummy data
-      setCounterValue(42);
-      setRecentSender('0:abcdef...');
-      setBalance(1000);
-    }
-  }, [userFriendlyAddress]);
+  console.log(counter_value,contract_balance);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center">
@@ -44,14 +36,14 @@ const TonContractUI: React.FC = () => {
             <div className="max-w-3xl mx-auto flex flex-wrap items-center justify-between text-sm">
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
                 <div className="text-gray-700">
-                  <span className="font-medium">Counter Value:</span> {counterValue}
+                  <span className="font-medium">Counter Value:</span> {counter_value}
                 </div>
                 <div className="text-gray-700">
-                  <span className="font-medium">Balance:</span> {balance} TON
+                  <span className="font-medium">Balance:</span> {fromNano(Number(contract_balance?contract_balance:0))} TON
                 </div>
               </div>
               <div className="mt-1 sm:mt-0 text-gray-700">
-                <span className="font-medium">Connected Address:</span> {userFriendlyAddress}
+                <TonConnectButton/>
               </div>
             </div>
           </header>
@@ -71,11 +63,11 @@ const TonContractUI: React.FC = () => {
                   <input
                     type="number"
                     value={depositAmount}
-                    onChange={(e) => setDepositAmount(e.target.value)}
+                    onChange={(e) => setDepositAmount(Number(e.target.value))}
                     className="w-full p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-400 text-sm"
                     placeholder="Enter amount"
                   />
-                  <button className="px-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-r-md hover:opacity-90 transition duration-200 text-sm">
+                  <button onClick={()=>{sendDeposit(depositAmount)}} className="px-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-r-md hover:opacity-90 transition duration-200 text-sm">
                     Deposit
                   </button>
                 </div>
@@ -88,11 +80,11 @@ const TonContractUI: React.FC = () => {
                   <input
                     type="number"
                     value={withdrawAmount}
-                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    onChange={(e) => setWithdrawAmount(Number(e.target.value))}
                     className="w-full p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-400 text-sm"
                     placeholder="Enter amount"
                   />
-                  <button className="px-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-r-md hover:opacity-90 transition duration-200 text-sm">
+                  <button onClick={()=>{sendWithdraw(withdrawAmount)}} className="px-4 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-r-md hover:opacity-90 transition duration-200 text-sm">
                     Withdraw
                   </button>
                 </div>
@@ -100,7 +92,7 @@ const TonContractUI: React.FC = () => {
 
               {/* Increment Counter */}
               <div className="flex justify-center">
-                <button className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-md hover:opacity-90 transition duration-200 transform hover:scale-105 text-sm">
+                <button onClick={()=>{sendIncrement()}} className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded-md hover:opacity-90 transition duration-200 transform hover:scale-105 text-sm">
                   Increment Counter
                 </button>
               </div>
